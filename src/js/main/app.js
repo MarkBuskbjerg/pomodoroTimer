@@ -12,12 +12,12 @@ var pomodoroTimer = (function() {
   var t;
 
   var display = function() {
-    // displays time in span
     timer = count;
     var minutes = parseInt(timer / 60, 10);
     var seconds = parseInt(timer % 60, 10);
     minutes = minutes < 10 ? '0' + minutes : minutes;
     seconds = seconds < 10 ? '0' + seconds : seconds;
+    // displays time in span
     document.getElementById('pomodoroTimer').innerHTML = minutes + ':' + seconds;
   };
 
@@ -45,9 +45,11 @@ var pomodoroTimer = (function() {
   };
 
   api.reset = function() {
-    // resets countdown
+    // first we'll pause the counting
     api.pause();
+    // then reset the count to original pomodoro value
     count = pomoSeconds;
+    // and display the new count value as minutes and seconds
     display();
   };
 
@@ -57,6 +59,7 @@ var pomodoroTimer = (function() {
 
 document.addEventListener('click', function(e) {
   if (e.target.id === 'startTimer') {
+    // this check makes sure we can't fire the button with Enter key after disabling it
     if (e.target.classList.contains('disabled')) {
       return;
     }
