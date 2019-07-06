@@ -24,3 +24,14 @@ select,
 button {
   font: inherit;
 }
+
+/* line 19, src/sass/components/_base.scss */
+button.disabled,
+button[disabled] {
+  -webkit-box-shadow: none;
+          box-shadow: none;
+  cursor: not-allowed;
+  opacity: 0.5;
+  pointer-events: none;
+  keyboard-events: none;
+}

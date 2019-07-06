@@ -7,26 +7,29 @@
  */
 
 var app = document.getElementById('app');
+console.log(app);
 var timerTemplate =
-  "<div id='timer'><span id='minutes'>25</span>:<span id='seconds'>00</span></div><button id='startTimer'>Start</button><button id='pauseTimer'>Pause</button><button id='resetTimer'>Reset</button>";
+  "<div id='pomodoroTimer'>25:00</div><button id='startTimer'>Start Timer</button><button id='pauseTimer'>Pause Timer</button><button id='resetTimer'>Reset Timer</button>";
 saferInnerHTML(app, timerTemplate);
 
-var pomo = (function() {
+var pomodoroTimer = (function() {
   var api = {};
 
   var pomoSeconds = 60 * 25;
   var count = pomoSeconds;
   var t;
 
-  function cddisplay() {
+  var display = function() {
     // displays time in span
     timer = count;
     var minutes = parseInt(timer / 60, 10);
     var seconds = parseInt(timer % 60, 10);
     minutes = minutes < 10 ? '0' + minutes : minutes;
     seconds = seconds < 10 ? '0' + seconds : seconds;
-    document.getElementById('timer').innerHTML = minutes + ':' + seconds;
-  }
+    document.getElementById('pomodoroTimer').innerHTML = minutes + ':' + seconds;
+  };
+
+  /* Public APIs */
 
   api.pause = function() {
     // pauses countdown
@@ -34,37 +37,46 @@ var pomo = (function() {
   };
 
   api.start = function() {
+    // this is kind of a hacky way to prevent setting timeout again
+    clearTimeout(t);
     // starts counting down
     if (count == 0) {
       console.log('Time is up');
     } else {
       count--;
-      t = window.setTimeout('pomo.start()', 1000);
+      // the setTimout fires api.start after the timeOut creating the actual countdown
+      // dunno why but apparently the function is globally scoped here?
+      t = window.setTimeout('pomodoroTimer.start()', 1000);
     }
-    cddisplay();
+    // display the new count value as minutes and seconds
+    display();
   };
 
   api.reset = function() {
     // resets countdown
     api.pause();
     count = pomoSeconds;
-    cddisplay();
+    display();
   };
 
-  // Spit out the API
+  // Spit out the APIs
   return api;
 })();
 
-document.addEventListener('click', function(e) {
+document.addEventListener('click', (function(e) {
   if (e.target.id === 'startTimer') {
-    //startTimer(60 * 25, document.getElementById('timer'));
-    pomo.start();
+    if (e.target.classList.contains('disabled')) {
+      return;
+    }
+    pomodoroTimer.start();
+    e.target.classList.add('disabled');
   }
   if (e.target.id === 'resetTimer') {
-    // Find a way to clear the interval and reset the timer...
-    pomo.reset();
+    pomodoroTimer.reset();
+    document.getElementById('startTimer').classList.remove('disabled');
   }
   if (e.target.id === 'pauseTimer') {
-    pomo.pause();
+    pomodoroTimer.pause();
+    document.getElementById('startTimer').classList.remove('disabled');
   }
-});
+}));
